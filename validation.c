@@ -1,170 +1,163 @@
-#include<stdio.h>
-#include<string.h>
-#include"contact.h"
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#include "contact.h"
 int number_validation(char str[])
 {
-     int i=0;
-      while(str[i]!='\0')
+    int i = 0;
+    while (str[i] != '\0')
     {
-        if(!(str[i]>='0'&& str[i]<='9'))
+        if (!(str[i] >= '0' && str[i] <= '9'))
         {
             ERROR("invalid phone number! it should only contain digits. try again!");
             return 0;
         }
         i++;
     }
-    int len=strlen(str);
-    if(len!=10)
+
+    int len = strlen(str);
+    if (len != 10)
     {
-       ERROR("invalid phone number! total digit should be equal to 10. try again!");
+        ERROR("invalid phone number! total digit should be equal to 10. try again!");
         return 0;
     }
-   
-    if(str[0]<'6')
+
+    if (str[0] < '6')
     {
         ERROR("first digit of the phone number should be greater than or equal to 6. try again!");
         return 0;
     }
-       return 1;
-   
-
+    return 1;
 }
 int name_validation(char str[])
 {
-    int i=0;
-    int flag=0;
-    while(str[i]!='\0')
+    int i = 0;
+    int flag = 0;
+    if (str[0] == '\n')
     {
-        if(!(str[i]>='A'&& str[i]<='Z'|| str[i]==' '||str[i]>='a'&& str[i]<='z'))
+        ERROR("Name cannot be empty\n");
+        return 0;
+    }
+    while (str[i] != '\0')
+    {
+        if (!(isalpha(str[i]) || str[i] == ' '))
         {
             ERROR("invalid format! name should only contain alphabets. try again!");
-              flag=1;
-              break;
+            return 0;
         }
         i++;
     }
-    if(flag==0)
     return 1;
-    else
-    {
-    return 0;
-    }
 }
-int mail_validation(char str[])
+int mail_validation(char mail_id[])
 {
- char domain[] = {"@gmail.com"};
-    int l1 = strlen(domain);
-    int l2 = strlen(str);
-    if (l2 < l1)
+    int len = strlen(mail_id);
+
+    int at_count = 0, dot_count = 0, at_pos = -1, dot_pos = -1;
+    for (int i = 0; i < len; i++)
     {
-        ERROR("Inavlid email id\nproblem:mail id too short\n");
-        return 0;
-    }
-    int flag = 1, j = 0;
-    for (int i = l2 - l1; i < l1; i++)
-    {
-        if (str[i] != domain[j])
-            flag = 0;
-        j++;
-    }
-    if (!flag || str[0] == '.')
-    {
-        ERROR("Inavlid email id format\nproblem:must contain domain\n");
-        return 0;
-    }
-    for (int i = 0; i < l1 - l2; i++)
-    {
-        if (!((str[i] >= 0 && str[i] <= 9) || (str[i] >= 'A' && str[i] <= 'Z') || (str[i] >= 'a' && str[i] <= 'z')))
+        if (mail_id[i] >= 'a' && mail_id[i] <= 'z' || mail_id[i] == '@' || mail_id[i] == '.' || mail_id[i] >= '0' && mail_id[i] <= '9')
         {
-            ERROR("Invalid email id format\nproblem:special characters not allowed\n");
+            if (mail_id[i] == '@')
+            {
+                at_count++;
+                at_pos = i;
+            }
+            if (mail_id[i] == '.')
+            {
+                dot_count++;
+                dot_pos = i;
+            }
+        }
+        else
+        {
+            ERROR("invalid mail id format. Mail Id should only contain '@' symbol, full stop (•), numbers and lowercase letters! Try again.\n");
+            return 0;
+        }
+    }
+    if (dot_pos == 0)
+    {
+        ERROR("invalid mail id format. Mail id do not start with (.) ! Try again.\n");
+        return 0;
+    }
+    if (at_count < 1)
+    {
+        ERROR("invalid mail id format. @ symbol is missing ! Try again.\n");
+        return 0;
+    }
+    if (at_pos < 1)
+    {
+        ERROR("invalid mail id format. Before @ some characters must be present ! Try again.\n");
+        return 0;
+    }
+
+    if (at_count > 1)
+    {
+        ERROR("invalid mail id format. Only One @ symbol must be present/ Try again.\n");
+        return 0;
+    }
+    if (dot_count > 1)
+    {
+        ERROR("invalid mail id format. Only One (.) symbol must be present/ Try again.\n");
+        return 0;
+    }
+    if (dot_count < 1)
+    {
+        ERROR("invalid mail id format. Atleast One (.) symbol must be present/ Try again.\n");
+        return 0;
+    }
+    if (dot_pos < at_pos)
+    {
+        ERROR("invalid mail id format\n '.' should not be present before @");
+        return 0;
+    }
+    if (dot_pos < at_pos + 2)
+    {
+        ERROR("invalid mail id format. Domain name is absent\n");
+        return 0;
+    }
+    int i=0,count=0;
+    while(i<at_pos)
+    {
+        if(mail_id[i]>=97 && mail_id[i]<=120)
+        {   
+            count++;
+            break;
+        }
+        i++;
+    }
+    if(count==0)
+    {
+       ERROR("invalid email id format. atleast one character must be present before @");
+       return 0;
+    }
+
+    for (int i = at_pos + 1; i < dot_pos; i++)
+    {
+        if (mail_id[i] >= 'a' && mail_id[i] <= 'z')
+        {
+        }
+        else
+        {
+            ERROR("There must be only lowercase letters between @ and (.) ! Try again.\n");
+            return 0;
+        }
+    }
+    if (dot_pos > len)
+    {
+        ERROR("There must be some characters will present after (.) ! Try again.\n");
+        return 0;
+    }
+    for (int i = dot_pos + 1; i < len; i++)
+    {
+        if (mail_id[i] >= 'a' && mail_id[i] <= 'z')
+        {
+        }
+        else
+        {
+            ERROR("There must be lower case letter after (.) ! Try again.\n");
             return 0;
         }
     }
     return 1;
 }
-/*
-✅ Email Validation Rules
-1. Must contain exactly one @ symbol
-
-No missing @
-
-No multiple @
-
-2. Email must not contain spaces
-
-Spaces anywhere make it invalid.
-
-3. Local part (before @) rules
-
-Cannot be empty.
-
-Cannot start with a dot (.).
-
-Cannot end with a dot (.).
-
-Cannot have consecutive dots (..).
-
-Maximum length: 64 characters.
-
-Allowed characters:
-
-Letters (A–Z, a–z)
-
-Digits (0–9)
-
-Special characters:
-
-. _ % + - ! # $ & ' * / = ? ^ ` { | } ~
-
-4. Domain part (after @) rules
-
-Cannot be empty.
-
-Maximum length: 255 characters.
-
-Must contain one or more labels separated by dots.
-
-5. Domain label rules (each part between dots)
-
-Cannot be empty.
-
-Length must be 1 to 63 characters.
-
-Must start with an alphanumeric (letter or digit).
-
-Must end with an alphanumeric.
-
-Middle characters may include:
-
-Letters
-
-Digits
-
-Hyphens -
-
-No consecutive dots.
-
-6. TLD (final part after last dot)
-
-Must be at least 2 characters (like .com, .in, .org)
-
-Must contain only letters (no numbers, no hyphens)
-
-7. Overall length rule
-
-Full email length should not exceed 320 characters.
-
-8. No forbidden characters
-
-No spaces
-
-No commas
-
-No semicolons
-
-No parentheses
-
-No quotes
-
-No backslashes (unless advanced escaping rules used, usually not)
-*/
