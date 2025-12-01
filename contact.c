@@ -110,7 +110,19 @@ int search_contacts(AddressBook *addressbook)
             found = search_name(addressbook);
             if (found == -2)
             {
-                ERROR("multiple contacts with same name found! try using mobile number of email id");
+                int n;
+                ERROR("multiple contacts with same name found! try using mobile number of email id\n");
+                printf("how do you want to search the contact\n1-phone number\n2-email id\n");
+                scanf("%d",&n);
+                getchar();
+                if(n==1)
+                {
+                    goto phone_number;
+                }
+                else if(n==2)
+                {
+                    goto mail_id;
+                }
             }
             else if (found >= 0)
             {
@@ -130,6 +142,7 @@ int search_contacts(AddressBook *addressbook)
             }
             break;
         case 2:
+        phone_number:
             found = search_mobile(addressbook);
             if (found >= 0)
             {
@@ -150,6 +163,7 @@ int search_contacts(AddressBook *addressbook)
             break;
 
         case 3:
+        mail_id:
             found = search_email(addressbook);
             if (found >= 0)
             {
@@ -206,7 +220,19 @@ int edit_contact(AddressBook *addressbook)
             pos = search_name(addressbook);
             if (pos == -2)
             {
-                ERROR("multiple contacts with same name found! try using mobile number of email id");
+                int n=0;
+                ERROR("multiple contacts with same name found! try using mobile number of email id\n");
+                printf("how do you want to search the contact\n1-phone number\n2-email id\n");
+                scanf("%d",&n);
+                getchar();
+                if(n==1)
+                {
+                    goto phone_number;
+                }
+                else if(n==2)
+                {
+                    goto mail_id;
+                }
             }
             else if (pos >= 0)
             {
@@ -223,10 +249,11 @@ int edit_contact(AddressBook *addressbook)
             else
             {
                 ERROR("contact not found\n");
-                break;
+                return 0;
             }
             break;
         case 2:
+        phone_number:
             pos = search_mobile(addressbook);
             if (pos >= 0)
             {
@@ -247,6 +274,7 @@ int edit_contact(AddressBook *addressbook)
             }
             break;
         case 3:
+        mail_id:
             pos = search_email(addressbook);
             if (pos >= 0)
             {
@@ -270,7 +298,7 @@ int edit_contact(AddressBook *addressbook)
             WARNING("Invalid input");
             break;
         }
-        printf("Wich contact detail do you want to edit?\n1.name\n2.mobile number\n3.email id\n4.exit\n:-");
+        printf("Which contact detail do you want to edit?\n1.name\n2.mobile number\n3.email id\n4.exit\n:-");
         while (scanf("%d", &choice) != 1)
         {
             int c;
@@ -347,7 +375,7 @@ int edit_contact(AddressBook *addressbook)
             printf("invalid input");
             break;
         }
-        printf("Do you want to edit more details: \n1-yes\n2-no");
+        printf("Do you want to edit more details: \n1-yes\n0-no");
         scanf("%d", &f);
         getchar();
     }
@@ -358,14 +386,14 @@ int delete_contact(AddressBook *addressbook)
     int choice, pos = -1, t;
     while (1)
     {
-        printf("Wich contact do you want to delete?\nsearch by:\n1.name\n2.Mobile number\n3.Email id\n4.exit\nEnter your choice:");
+        printf("Which contact do you want to delete?\nsearch by:\n1.name\n2.Mobile number\n3.Email id\n4.exit\nEnter your choice:");
         while (scanf("%d", &choice) != 1)
         {
             int c;
             while ((c = getchar()) != '\n' && c != EOF)
             {
             }
-            ERROR("Invalid input! please enter a number");
+            ERROR("Invalid input! please enter a number:");
         }
         getchar();
         switch (choice)
@@ -374,7 +402,19 @@ int delete_contact(AddressBook *addressbook)
             pos = search_name(addressbook);
             if (pos == -2)
             {
+                int n;
                 ERROR("multiple contacts with same name found! try using mobile number of email id");
+                 printf("how do you want to search the contact\n1-phone number\n2-email id\n");
+                scanf("%d",&n);
+                getchar();
+                if(n==1)
+                {
+                    goto phone_number;
+                }
+                else if(n==2)
+                {
+                    goto mail_id;
+                }
             }
             else if (pos >= 0)
             {
@@ -403,6 +443,7 @@ int delete_contact(AddressBook *addressbook)
             }
 
         case 2:
+        phone_number:
             pos = search_mobile(addressbook);
             if (pos >= 0)
             {
@@ -415,7 +456,7 @@ int delete_contact(AddressBook *addressbook)
                 printf("\t\t\t| %-15s : %-25s |\n", "Email ID", addressbook->contact_details[pos].Mail_ID);
 
                 printf("\t\t\t==============================================\n\n");
-                printf("Are you sure you want to delete this contact?\n1-YES\n0-NO");
+                printf("Are you sure you want to delete this contact?\n1-YES\n0-NO\n");
                 scanf("%d", &t);
                 if (t)
                 {
@@ -430,6 +471,7 @@ int delete_contact(AddressBook *addressbook)
 
             break;
         case 3:
+        mail_id:
             pos = search_email(addressbook);
             if (pos >= 0)
             {
@@ -442,7 +484,7 @@ int delete_contact(AddressBook *addressbook)
                 printf("\t\t\t| %-15s : %-25s |\n", "Email ID", addressbook->contact_details[pos].Mail_ID);
 
                 printf("\t\t\t==============================================\n\n");
-                printf("Are you sure you want to delete this contact?\n1-YES\n0-NO");
+                printf("Are you sure you want to delete this contact?\n1-YES\n0-NO\n");
                 scanf("%d", &t);
                 if (t)
                 {
@@ -475,8 +517,8 @@ int delete_contact(AddressBook *addressbook)
 }
 int save_contacts(AddressBook *addressbook)
 {
-    FILE *fp = fopen("contact.txt", "w+");
-    fprintf(fp, "%d\n", addressbook->contact_count);
+    FILE *fp = fopen("contact.csv", "w+");
+    fprintf(fp, "#%d\n",addressbook->contact_count);
     for (int i = 0; i < addressbook->contact_count; i++)
     {
 
